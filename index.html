@@ -181,15 +181,15 @@
 
         .table-container {
             overflow-x: auto;
-            border: 1px solid #eeeeee;
-            border-radius: 6px;
+            /* Dihapus border-nya agar kolom action bisa berada di luar kotak tabel */
+            padding-right: 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85em;
-            background: #ffffff;
+            background: transparent;
         }
 
         th, td {
@@ -197,6 +197,7 @@
             padding: 10px 12px;
             text-align: right;
             vertical-align: middle;
+            background: #ffffff;
         }
 
         th {
@@ -207,13 +208,27 @@
         }
 
         td:first-child, th:first-child { text-align: left; }
-        tr:hover td { background-color: var(--primary-light); }
+        
+        tr:hover td:not(.action-col) { background-color: var(--primary-light); }
 
         .row-total td {
             font-weight: bold;
             background-color: var(--primary-light) !important;
             color: var(--primary-dark);
             border-top: 2px solid var(--primary);
+        }
+
+        /* Styling khusus agar tombol hapus terlihat berada di luar tabel */
+        th.action-col, td.action-col {
+            border: none !important;
+            background: transparent !important;
+            width: 45px;
+            padding: 0 0 0 10px;
+            vertical-align: middle;
+        }
+
+        .row-total td.action-col {
+            border-top: none !important;
         }
 
         .text-red {
@@ -270,6 +285,25 @@
             padding: 0 5px;
         }
         .btn-delete:hover { color: #b71c1c; transform: scale(1.1); }
+
+        /* Style untuk Trash Icon (Abu-abu) pada setiap baris */
+        .btn-delete-row {
+            background: none;
+            border: none;
+            color: #9e9e9e;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .btn-delete-row:hover {
+            color: var(--primary-dark);
+            background-color: var(--primary-light);
+            transform: scale(1.1);
+        }
 
         .promo-item {
             background: #fff;
@@ -343,7 +377,7 @@
             .container { box-shadow: none; border: none; padding: 0; max-width: 100%; }
             
             /* Sembunyikan elemen interaktif */
-            .btn-action, .btn-delete, .doc-actions, .sync-icon { display: none !important; }
+            .btn-action, .btn-delete, .btn-delete-row, .doc-actions, .sync-icon { display: none !important; }
             
             /* Ubah input menjadi seperti teks biasa */
             input[type="text"], input[type="number"], .promo-name-input {
@@ -375,7 +409,7 @@
             .text-red { color: #000; } /* Hilangkan warna merah saat print agar hemat tinta/formal */
             
             /* Sembunyikan kolom action di tabel */
-            th:last-child, td:last-child { display: none; }
+            th.action-col, td.action-col { display: none; }
         }
     </style>
 </head>
@@ -492,7 +526,7 @@
 
 <script>
     // ==========================================
-    // CORE LOGIC (TIDAK DIUBAH SAMA SEKALI)
+    // CORE LOGIC 
     // ==========================================
     const parseCurrency = val => parseFloat(val.toString().replace(/[^0-9]/g, '')) || 0;
     const formatCurrency = val => Math.round(val).toLocaleString('id-ID');
@@ -662,7 +696,7 @@
                 <th>Net Profit</th>
                 <th>Margin</th>
                 <th>Mark-up HPP</th>
-                <th></th>
+                <th class="action-col"></th>
             </tr>
         `;
 
@@ -701,7 +735,17 @@
             let m = netCash > 0 ? (profit / netCash) * 100 : 0;
             let mkup = hpp > 0 ? (profit / hpp) * 100 : 0;
 
-            let deleteBtn = index >= 3 ? `<button class="btn-delete" onclick="removeRow(${r.id})" title="Hapus Baris">×</button>` : '';
+            // Tombol Trashcan muncul dari index 1 (Baris ke-2)
+            let deleteBtn = index >= 1 ? `
+                <button class="btn-delete-row" onclick="removeRow(${r.id})" title="Hapus Baris">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
+            ` : '';
 
             return `
                 <tr>
@@ -718,7 +762,7 @@
                     <td>${formatCurrency(profit)}</td>
                     <td>${m.toFixed(2)}%</td>
                     <td>${mkup.toFixed(2)}%</td>
-                    <td style="text-align:center;">${deleteBtn}</td>
+                    <td class="action-col" style="text-align:center;">${deleteBtn}</td>
                 </tr>
             `;
         }).join('');
@@ -740,7 +784,7 @@
                 <td>${formatCurrency(sumTotalProf)}</td>
                 <td>${mgab.toFixed(2)}%</td>
                 <td>${mkupGab.toFixed(2)}%</td>
-                <td></td>
+                <td class="action-col"></td>
             </tr>
         `;
 
