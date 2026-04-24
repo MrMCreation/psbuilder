@@ -61,7 +61,6 @@
             font-size: 1.1em;
         }
 
-        /* Styling untuk tombol Print diposisikan di pojok kanan atas */
         .doc-actions {
             position: absolute;
             top: 0;
@@ -181,7 +180,6 @@
 
         .table-container {
             overflow-x: auto;
-            /* Dihapus border-nya agar kolom action bisa berada di luar kotak tabel */
             padding-right: 10px;
         }
 
@@ -218,7 +216,6 @@
             border-top: 2px solid var(--primary);
         }
 
-        /* Styling khusus agar tombol hapus terlihat berada di luar tabel */
         th.action-col, td.action-col {
             border: none !important;
             background: transparent !important;
@@ -286,7 +283,6 @@
         }
         .btn-delete:hover { color: #b71c1c; transform: scale(1.1); }
 
-        /* Style untuk Trash Icon (Abu-abu) pada setiap baris */
         .btn-delete-row {
             background: none;
             border: none;
@@ -350,36 +346,24 @@
             cursor: pointer;
         }
 
-        /* =========================================
-           TAMBAHAN: RESPONSIVE DESIGN (MOBILE)
-           ========================================= */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .container { padding: 15px; }
             .grid { grid-template-columns: 1fr; gap: 15px; }
             .header h1 { font-size: 1.5em; }
-            
-            /* Penyesuaian agar tombol print tidak tertimpa text di mobile */
             .doc-actions { position: relative; margin-top: 15px; display: flex; flex-direction: column; }
             .doc-actions button { width: 100%; justify-content: center; padding: 12px; font-size: 1em; }
-            
             .promo-header { flex-direction: column; align-items: flex-start; gap: 10px; }
             .promo-name-input { width: 100% !important; }
             .promo-header .btn-delete { align-self: flex-end; }
             .table-container { padding-bottom: 10px; }
         }
 
-        /* =========================================
-           TAMBAHAN: PRINT STYLING
-           ========================================= */
         @media print {
             body { background: #fff; padding: 0; margin: 0; }
             .container { box-shadow: none; border: none; padding: 0; max-width: 100%; }
-            
-            /* Sembunyikan elemen interaktif */
             .btn-action, .btn-delete, .btn-delete-row, .doc-actions, .sync-icon { display: none !important; }
             
-            /* Ubah input menjadi seperti teks biasa */
             input[type="text"], input[type="number"], .promo-name-input {
                 border: none !important;
                 background: transparent !important;
@@ -393,22 +377,22 @@
             input.has-prefix { padding-left: 0 !important; }
             input.has-suffix { padding-right: 0 !important; }
             
-            /* Penyesuaian Layout */
+            /* Sembunyikan checkbox saat di-print agar bersih */
+            .promo-checkboxes { display: none !important; }
+
             .grid { display: flex; flex-direction: row; gap: 20px; page-break-inside: avoid; }
             .card { flex: 1; border: 1px solid #ccc; padding: 15px; background: #fff; }
             .card.active-card { border: 1px solid #ccc; box-shadow: none; }
             .formula-box { background: #f9f9f9; border-left-color: #ccc; }
             
-            /* Penyesuaian Tabel agar muat di kertas */
             .table-container { overflow: visible; border: none; }
             table { font-size: 10px; page-break-inside: auto; }
             tr { page-break-inside: avoid; page-break-after: auto; }
             th { background-color: #eee !important; color: #000 !important; border: 1px solid #ccc; }
             td { border: 1px solid #ccc; color: #000; }
             .row-total td { background-color: #f5f5f5 !important; color: #000; }
-            .text-red { color: #000; } /* Hilangkan warna merah saat print agar hemat tinta/formal */
+            .text-red { color: #000; }
             
-            /* Sembunyikan kolom action di tabel */
             th.action-col, td.action-col { display: none; }
         }
     </style>
@@ -420,7 +404,6 @@
         <h1>Pricing Strategy Builder</h1>
         <p>Strategi Referral Pricing</p>
         
-        <!-- Tombol Action Document dipindah ke pojok kanan atas -->
         <div class="doc-actions">
             <button class="btn-action btn-outline" onclick="window.print()">
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>
@@ -446,22 +429,26 @@
                 <input type="text" class="curr input-baseline has-prefix" id="kpr" value="176.000.000">
             </div>
 
-            <label>Promo Penjualan (Optional)</label>
-            <div class="input-group">
-                <span class="prefix">Rp</span>
-                <input type="text" class="curr input-baseline has-prefix" id="sub1" value="0">
-            </div>
+            <!-- Bagian Sub 1 Dihapus -->
 
-            <label>Biaya Akad & Admin</label>
-            <div class="input-group">
+            <label>Promo Biaya Akad & Admin</label>
+            <div class="input-group" style="margin-bottom: 0;">
                 <span class="prefix">Rp</span>
                 <input type="text" class="curr input-baseline has-prefix" id="sub2" value="9.000.000">
             </div>
+            <!-- Checkbox untuk Biaya Akad -->
+            <div class="promo-checkboxes" id="akad-checkboxes" style="margin-bottom: 18px; border: 1px solid #eee;">
+                <!-- Injected via JS -->
+            </div>
 
-            <label>DP Konsumen</label>
-            <div class="input-group">
+            <label>Promo DP Konsumen</label>
+            <div class="input-group" style="margin-bottom: 0;">
                 <span class="prefix">Rp</span>
                 <input type="text" class="curr input-baseline has-prefix" id="sub3" value="69.000.000">
+            </div>
+            <!-- Checkbox untuk DP Konsumen -->
+            <div class="promo-checkboxes" id="dp-checkboxes" style="margin-bottom: 18px; border: 1px solid #eee;">
+                <!-- Injected via JS -->
             </div>
 
             <!-- Dynamic Promo Section -->
@@ -534,7 +521,6 @@
 
     const elHpp = document.getElementById('hpp');
     const elKpr = document.getElementById('kpr');
-    const elSub1 = document.getElementById('sub1');
     const elSub2 = document.getElementById('sub2');
     const elSub3 = document.getElementById('sub3');
     const elHarga = document.getElementById('harga');
@@ -554,12 +540,17 @@
         { id: 3, name: "Harga 3 (Ajak 2 Orang)" }
     ];
     let customPromos = []; 
+    
+    // State default untuk Biaya Akad (Sub2) & DP (Sub3)
+    let appliedToAkad = [2]; // Default di Harga 2
+    let appliedToDp = [3];   // Default di Harga 3
 
     function saveToLocal() {
         const data = {
-            hpp: elHpp.value, kpr: elKpr.value, sub1: elSub1.value, sub2: elSub2.value, sub3: elSub3.value,
+            hpp: elHpp.value, kpr: elKpr.value, sub2: elSub2.value, sub3: elSub3.value,
             harga: elHarga.value, marginGab: elMarginGab.value, markupGab: elMarkupGab.value,
-            rows: rowData, promos: customPromos
+            rows: rowData, promos: customPromos,
+            appliedToAkad: appliedToAkad, appliedToDp: appliedToDp
         };
         localStorage.setItem('dominoAdvancedData', JSON.stringify(data));
     }
@@ -571,7 +562,6 @@
                 const data = JSON.parse(saved);
                 if (data.hpp) elHpp.value = data.hpp;
                 if (data.kpr) elKpr.value = data.kpr;
-                if (data.sub1) elSub1.value = data.sub1;
                 if (data.sub2) elSub2.value = data.sub2;
                 if (data.sub3) elSub3.value = data.sub3;
                 if (data.harga) elHarga.value = data.harga;
@@ -579,8 +569,21 @@
                 if (data.markupGab) elMarkupGab.value = data.markupGab;
                 if (data.rows && data.rows.length > 0) rowData = data.rows;
                 if (data.promos) customPromos = data.promos;
+                if (data.appliedToAkad) appliedToAkad = data.appliedToAkad;
+                if (data.appliedToDp) appliedToDp = data.appliedToDp;
             } catch(e) {}
         }
+    }
+
+    function toggleBasePromo(type, rowId, isChecked) {
+        let arr = type === 'akad' ? appliedToAkad : appliedToDp;
+        if (isChecked && !arr.includes(rowId)) arr.push(rowId);
+        else if (!isChecked) {
+            let idx = arr.indexOf(rowId);
+            if (idx > -1) arr.splice(idx, 1);
+        }
+        saveToLocal();
+        updateFromHarga();
     }
 
     function addPromo() {
@@ -627,6 +630,23 @@
     }
 
     function renderPromoUI() {
+        // Render UI Checkbox untuk Biaya Akad
+        document.getElementById('akad-checkboxes').innerHTML = `
+            <span style="width:100%; color:#666; font-size:0.85em; font-weight:600;">Terapkan di:</span>
+            ${rowData.map(r => `
+                <label><input type="checkbox" onchange="toggleBasePromo('akad', ${r.id}, this.checked)" ${appliedToAkad.includes(r.id) ? 'checked' : ''}> ${r.name}</label>
+            `).join('')}
+        `;
+        
+        // Render UI Checkbox untuk DP Konsumen
+        document.getElementById('dp-checkboxes').innerHTML = `
+            <span style="width:100%; color:#666; font-size:0.85em; font-weight:600;">Terapkan di:</span>
+            ${rowData.map(r => `
+                <label><input type="checkbox" onchange="toggleBasePromo('dp', ${r.id}, this.checked)" ${appliedToDp.includes(r.id) ? 'checked' : ''}> ${r.name}</label>
+            `).join('')}
+        `;
+
+        // Render Custom Promos
         promoContainer.innerHTML = customPromos.map(p => `
             <div class="promo-item">
                 <div class="promo-header">
@@ -638,7 +658,7 @@
                     <input type="text" class="has-prefix" value="${formatCurrency(p.amount)}" oninput="handlePromoAmountInput(this, ${p.id})">
                 </div>
                 <div class="promo-checkboxes">
-                    <span style="width:100%; color:#666; font-size:0.9em; font-weight:600;">Terapkan di:</span>
+                    <span style="width:100%; color:#666; font-size:0.85em; font-weight:600;">Terapkan di:</span>
                     ${rowData.map(r => `
                         <label><input type="checkbox" onchange="togglePromoRow(${p.id}, ${r.id}, this.checked)" ${p.appliedTo.includes(r.id) ? 'checked' : ''}> ${r.name}</label>
                     `).join('')}
@@ -656,7 +676,12 @@
     function removeRow(id) {
         if(rowData.length <= 1) return alert("Minimal harus ada 1 baris!");
         rowData = rowData.filter(r => r.id !== id);
+        
+        // Bersihkan ID dari semua sistem checklist agar tidak error logic
         customPromos.forEach(p => p.appliedTo = p.appliedTo.filter(rid => rid !== id));
+        appliedToAkad = appliedToAkad.filter(rid => rid !== id);
+        appliedToDp = appliedToDp.filter(rid => rid !== id);
+
         renderPromoUI();
         updateFromHarga();
     }
@@ -681,7 +706,7 @@
         `;
     }
 
-    function renderTable(harga, hpp, kpr, sub1, sub2, sub3) {
+    function renderTable(harga, hpp, kpr, sub2, sub3) {
         let extraHeaders = customPromos.map(p => `<th>${p.name}</th>`).join('');
         thead.innerHTML = `
             <tr>
@@ -709,7 +734,10 @@
         let customSubSums = new Array(customPromos.length).fill(0);
 
         let rowsHtml = rowData.map((r, index) => {
-            let baseSub = (index === 0) ? sub1 : (index === 1) ? sub2 : (index === 2) ? sub3 : 0;
+            // Kalkulasi Subsidi Base dinamis berdasarkan checkbox
+            let baseSub = 0;
+            if (appliedToAkad.includes(r.id)) baseSub += sub2;
+            if (appliedToDp.includes(r.id)) baseSub += sub3;
             sumBaseSub += baseSub;
 
             let rowCustomPromosTotal = 0;
@@ -724,8 +752,9 @@
             let netCash = harga - totalRowSubsidy;
             let profit = netCash - hpp;
 
-            let dp = Math.max(0, harga - kpr);
-            if (index === 2) dp = Math.max(0, (harga - kpr) - sub3); 
+            // Kalkulasi pengurangan DP spesifik dinamis (hanya jika DP Subsidi dicentang)
+            let dpReduction = appliedToDp.includes(r.id) ? sub3 : 0;
+            let dp = Math.max(0, (harga - kpr) - dpReduction);
             if(harga - totalRowSubsidy < kpr) dp = 0; 
 
             sumDp += dp;
@@ -735,7 +764,6 @@
             let m = netCash > 0 ? (profit / netCash) * 100 : 0;
             let mkup = hpp > 0 ? (profit / hpp) * 100 : 0;
 
-            // Tombol Trashcan muncul dari index 1 (Baris ke-2)
             let deleteBtn = index >= 1 ? `
                 <button class="btn-delete-row" onclick="removeRow(${r.id})" title="Hapus Baris">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -792,14 +820,10 @@
     }
 
     function calculateTotalSubsidyForAll() {
-        let sub1 = parseCurrency(elSub1.value);
         let sub2 = parseCurrency(elSub2.value);
         let sub3 = parseCurrency(elSub3.value);
         
-        let baseSubTotal = 0;
-        if(rowData.length > 0) baseSubTotal += sub1;
-        if(rowData.length > 1) baseSubTotal += sub2;
-        if(rowData.length > 2) baseSubTotal += sub3;
+        let baseSubTotal = (sub2 * appliedToAkad.length) + (sub3 * appliedToDp.length);
 
         let customSubTotal = 0;
         customPromos.forEach(p => {
@@ -816,7 +840,6 @@
         let harga = parseCurrency(elHarga.value);
         let hpp = parseCurrency(elHpp.value);
         let kpr = parseCurrency(elKpr.value);
-        let sub1 = parseCurrency(elSub1.value);
         let sub2 = parseCurrency(elSub2.value);
         let sub3 = parseCurrency(elSub3.value);
 
@@ -834,7 +857,7 @@
         elMarkupGab.value = mkupGab.toFixed(2);
 
         renderFormulas(totalNet, totalHpp, totalProf, mgab, mkupGab);
-        renderTable(harga, hpp, kpr, sub1, sub2, sub3);
+        renderTable(harga, hpp, kpr, sub2, sub3);
         
         saveToLocal();
         isUpdating = false;
@@ -865,7 +888,7 @@
         elMarkupGab.value = mkupGab.toFixed(2);
 
         renderFormulas(totalNet, totalHpp, totalProf, mgab * 100, mkupGab);
-        renderTable(harga, hpp, kpr, parseCurrency(elSub1.value), parseCurrency(elSub2.value), parseCurrency(elSub3.value));
+        renderTable(harga, hpp, kpr, parseCurrency(elSub2.value), parseCurrency(elSub3.value));
         
         saveToLocal();
         isUpdating = false;
@@ -895,7 +918,7 @@
         elMarginGab.value = mgab.toFixed(2);
 
         renderFormulas(totalNet, totalHpp, totalProf, mgab, mkupGab * 100);
-        renderTable(harga, hpp, kpr, parseCurrency(elSub1.value), parseCurrency(elSub2.value), parseCurrency(elSub3.value));
+        renderTable(harga, hpp, kpr, parseCurrency(elSub2.value), parseCurrency(elSub3.value));
         
         saveToLocal();
         isUpdating = false;
