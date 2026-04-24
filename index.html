@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Price Strategy Builder by Mr. M</title>
+    <title>Pricing Strategy Builder by Mr. M</title>
     
     <style>
         :root {
@@ -110,6 +110,26 @@
             font-weight: 600;
             font-size: 0.9em;
             color: var(--text-main);
+        }
+
+        /* Styling khusus untuk title yang bisa diedit seperti normal text */
+        .editable-label {
+            display: inline-block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--text-main);
+            outline: none;
+            cursor: text;
+            border-bottom: 1px dashed transparent;
+            transition: all 0.2s ease;
+        }
+        .editable-label:hover {
+            border-bottom: 1px dashed var(--primary);
+        }
+        .editable-label:focus {
+            border-bottom: 1px solid var(--primary);
+            color: var(--primary-dark);
         }
 
         .input-group {
@@ -301,32 +321,6 @@
             transform: scale(1.1);
         }
 
-        .promo-item {
-            background: #fff;
-            border: 1px solid #ddd;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .promo-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .promo-name-input {
-            border: none !important;
-            border-bottom: 1px dashed #ccc !important;
-            border-radius: 0 !important;
-            padding: 2px !important;
-            font-weight: 600 !important;
-            color: var(--primary-dark) !important;
-            background: transparent !important;
-            width: 70% !important;
-            box-shadow: none !important;
-        }
-        .promo-name-input:focus { border-bottom-color: var(--primary) !important; }
         .promo-checkboxes {
             display: flex;
             flex-wrap: wrap;
@@ -353,9 +347,6 @@
             .header h1 { font-size: 1.5em; }
             .doc-actions { position: relative; margin-top: 15px; display: flex; flex-direction: column; }
             .doc-actions button { width: 100%; justify-content: center; padding: 12px; font-size: 1em; }
-            .promo-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .promo-name-input { width: 100% !important; }
-            .promo-header .btn-delete { align-self: flex-end; }
             .table-container { padding-bottom: 10px; }
         }
 
@@ -364,7 +355,7 @@
             .container { box-shadow: none; border: none; padding: 0; max-width: 100%; }
             .btn-action, .btn-delete, .btn-delete-row, .doc-actions, .sync-icon { display: none !important; }
             
-            input[type="text"], input[type="number"], .promo-name-input {
+            input[type="text"], input[type="number"], .editable-label {
                 border: none !important;
                 background: transparent !important;
                 box-shadow: none !important;
@@ -377,7 +368,6 @@
             input.has-prefix { padding-left: 0 !important; }
             input.has-suffix { padding-right: 0 !important; }
             
-            /* Sembunyikan checkbox saat di-print agar bersih */
             .promo-checkboxes { display: none !important; }
 
             .grid { display: flex; flex-direction: row; gap: 20px; page-break-inside: avoid; }
@@ -401,7 +391,7 @@
 
 <div class="container" id="print-area">
     <div class="header">
-        <h1>Price Strategy Builder</h1>
+        <h1>Pricing Strategy Builder</h1>
         <p>Strategi Referral Pricing</p>
         
         <div class="doc-actions">
@@ -429,24 +419,22 @@
                 <input type="text" class="curr input-baseline has-prefix" id="kpr" value="176.000.000">
             </div>
 
-            <!-- Bagian Sub 1 Dihapus -->
-
-            <label>Promo Biaya Akad & Admin</label>
+            <!-- Editable Judul Biaya Akad & Admin -->
+            <div class="editable-label" contenteditable="true" id="labelSub2" onblur="updateLabels()" onkeydown="preventEnter(event)">Biaya Akad & Admin</div>
             <div class="input-group" style="margin-bottom: 0;">
                 <span class="prefix">Rp</span>
                 <input type="text" class="curr input-baseline has-prefix" id="sub2" value="9.000.000">
             </div>
-            <!-- Checkbox untuk Biaya Akad -->
             <div class="promo-checkboxes" id="akad-checkboxes" style="margin-bottom: 18px; border: 1px solid #eee;">
                 <!-- Injected via JS -->
             </div>
 
-            <label>Promo DP Konsumen</label>
+            <!-- Editable Judul DP Konsumen -->
+            <div class="editable-label" contenteditable="true" id="labelSub3" onblur="updateLabels()" onkeydown="preventEnter(event)">DP Konsumen</div>
             <div class="input-group" style="margin-bottom: 0;">
                 <span class="prefix">Rp</span>
                 <input type="text" class="curr input-baseline has-prefix" id="sub3" value="69.000.000">
             </div>
-            <!-- Checkbox untuk DP Konsumen -->
             <div class="promo-checkboxes" id="dp-checkboxes" style="margin-bottom: 18px; border: 1px solid #eee;">
                 <!-- Injected via JS -->
             </div>
@@ -535,22 +523,26 @@
     let isUpdating = false;
 
     let rowData = [
-        { id: 1, name: "Harga 1 (Normal)" },
-        { id: 2, name: "Harga 2 (Ajak 1 Orang)" },
-        { id: 3, name: "Harga 3 (Ajak 2 Orang)" }
+        { id: 1, name: "Harga A (Normal)" },
+        { id: 2, name: "Harga B (Ajak 1 Orang)" },
+        { id: 3, name: "Harga C (Ajak 2 Orang)" }
     ];
     let customPromos = []; 
     
-    // State default untuk Biaya Akad (Sub2) & DP (Sub3)
-    let appliedToAkad = [2]; // Default di Harga 2
-    let appliedToDp = [3];   // Default di Harga 3
+    let appliedToAkad = [2]; 
+    let appliedToDp = [3];   
+
+    // Variabel untuk Judul Dinamis
+    let titleSub2 = "Biaya Akad & Admin";
+    let titleSub3 = "DP Konsumen";
 
     function saveToLocal() {
         const data = {
             hpp: elHpp.value, kpr: elKpr.value, sub2: elSub2.value, sub3: elSub3.value,
             harga: elHarga.value, marginGab: elMarginGab.value, markupGab: elMarkupGab.value,
             rows: rowData, promos: customPromos,
-            appliedToAkad: appliedToAkad, appliedToDp: appliedToDp
+            appliedToAkad: appliedToAkad, appliedToDp: appliedToDp,
+            titleSub2: titleSub2, titleSub3: titleSub3
         };
         localStorage.setItem('dominoAdvancedData', JSON.stringify(data));
     }
@@ -571,8 +563,17 @@
                 if (data.promos) customPromos = data.promos;
                 if (data.appliedToAkad) appliedToAkad = data.appliedToAkad;
                 if (data.appliedToDp) appliedToDp = data.appliedToDp;
+                if (data.titleSub2) { titleSub2 = data.titleSub2; document.getElementById('labelSub2').innerText = titleSub2; }
+                if (data.titleSub3) { titleSub3 = data.titleSub3; document.getElementById('labelSub3').innerText = titleSub3; }
             } catch(e) {}
         }
+    }
+
+    function updateLabels() {
+        titleSub2 = document.getElementById('labelSub2').innerText.trim() || "Biaya Akad & Admin";
+        titleSub3 = document.getElementById('labelSub3').innerText.trim() || "DP Konsumen";
+        saveToLocal();
+        updateFromHarga();
     }
 
     function toggleBasePromo(type, rowId, isChecked) {
@@ -630,7 +631,6 @@
     }
 
     function renderPromoUI() {
-        // Render UI Checkbox untuk Biaya Akad
         document.getElementById('akad-checkboxes').innerHTML = `
             <span style="width:100%; color:#666; font-size:0.85em; font-weight:600;">Terapkan di:</span>
             ${rowData.map(r => `
@@ -638,7 +638,6 @@
             `).join('')}
         `;
         
-        // Render UI Checkbox untuk DP Konsumen
         document.getElementById('dp-checkboxes').innerHTML = `
             <span style="width:100%; color:#666; font-size:0.85em; font-weight:600;">Terapkan di:</span>
             ${rowData.map(r => `
@@ -646,18 +645,18 @@
             `).join('')}
         `;
 
-        // Render Custom Promos
+        // Render Custom Promos (Desain disamakan dengan form atasnya)
         promoContainer.innerHTML = customPromos.map(p => `
-            <div class="promo-item">
-                <div class="promo-header">
-                    <input type="text" class="promo-name-input" value="${p.name}" onblur="updatePromoName(${p.id}, this.value)">
-                    <button class="btn-delete" onclick="removePromo(${p.id})">×</button>
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
+                    <div class="editable-label" contenteditable="true" onblur="updatePromoName(${p.id}, this.innerText)" onkeydown="preventEnter(event)" style="margin-bottom:0; width: 85%;">${p.name}</div>
+                    <button class="btn-delete" onclick="removePromo(${p.id})" style="font-size: 1.2em; line-height: 1; padding: 0;" title="Hapus Promo">×</button>
                 </div>
-                <div class="input-group" style="margin-bottom:0;">
+                <div class="input-group" style="margin-bottom: 0;">
                     <span class="prefix">Rp</span>
                     <input type="text" class="has-prefix" value="${formatCurrency(p.amount)}" oninput="handlePromoAmountInput(this, ${p.id})">
                 </div>
-                <div class="promo-checkboxes">
+                <div class="promo-checkboxes" style="margin-bottom: 0; border: 1px solid #eee;">
                     <span style="width:100%; color:#666; font-size:0.85em; font-weight:600;">Terapkan di:</span>
                     ${rowData.map(r => `
                         <label><input type="checkbox" onchange="togglePromoRow(${p.id}, ${r.id}, this.checked)" ${p.appliedTo.includes(r.id) ? 'checked' : ''}> ${r.name}</label>
@@ -677,7 +676,6 @@
         if(rowData.length <= 1) return alert("Minimal harus ada 1 baris!");
         rowData = rowData.filter(r => r.id !== id);
         
-        // Bersihkan ID dari semua sistem checklist agar tidak error logic
         customPromos.forEach(p => p.appliedTo = p.appliedTo.filter(rid => rid !== id));
         appliedToAkad = appliedToAkad.filter(rid => rid !== id);
         appliedToDp = appliedToDp.filter(rid => rid !== id);
@@ -707,16 +705,19 @@
     }
 
     function renderTable(harga, hpp, kpr, sub2, sub3) {
-        let extraHeaders = customPromos.map(p => `<th>${p.name}</th>`).join('');
+        // Kolom Promo Tambahan hanya muncul jika ada Custom Promo yang dibuat
+        let promoHeaderCol = customPromos.length > 0 ? `<th>Promo Tambahan</th>` : '';
+
         thead.innerHTML = `
             <tr>
                 <th>Tipe Harga</th>
                 <th>HPP</th>
                 <th>Harga Jual</th>
                 <th>Plafond Bank</th>
-                <th>DP Konsumen</th>
-                <th>Subsidi Developer (Base)</th>
-                ${extraHeaders}
+                <th>${titleSub3} (Nett)</th>
+                <th>${titleSub2}</th>
+                <th>${titleSub3} (Subsidi)</th>
+                ${promoHeaderCol}
                 <th>Net Cash</th>
                 <th>Net Profit</th>
                 <th>Margin</th>
@@ -730,39 +731,35 @@
         let totalHarga = harga * N;
         let totalKpr = kpr * N;
         
-        let sumDp = 0, sumBaseSub = 0, sumTotalNet = 0, sumTotalProf = 0;
-        let customSubSums = new Array(customPromos.length).fill(0);
+        let sumDp = 0, sumSub2 = 0, sumSub3 = 0, sumCustomTotal = 0, sumTotalNet = 0, sumTotalProf = 0;
 
         let rowsHtml = rowData.map((r, index) => {
-            // Kalkulasi Subsidi Base dinamis berdasarkan checkbox
-            let baseSub = 0;
-            if (appliedToAkad.includes(r.id)) baseSub += sub2;
-            if (appliedToDp.includes(r.id)) baseSub += sub3;
-            sumBaseSub += baseSub;
+            let rowSub2 = appliedToAkad.includes(r.id) ? sub2 : 0;
+            let rowSub3 = appliedToDp.includes(r.id) ? sub3 : 0;
 
             let rowCustomPromosTotal = 0;
-            let promoCells = customPromos.map((p, pIdx) => {
-                let amt = p.appliedTo.includes(r.id) ? p.amount : 0;
-                rowCustomPromosTotal += amt;
-                customSubSums[pIdx] += amt;
-                return `<td class="text-red">${formatCurrency(amt)}</td>`;
-            }).join('');
+            customPromos.forEach(p => {
+                if (p.appliedTo.includes(r.id)) rowCustomPromosTotal += p.amount;
+            });
 
-            let totalRowSubsidy = baseSub + rowCustomPromosTotal;
+            let totalRowSubsidy = rowSub2 + rowSub3 + rowCustomPromosTotal;
             let netCash = harga - totalRowSubsidy;
             let profit = netCash - hpp;
 
-            // Kalkulasi pengurangan DP spesifik dinamis (hanya jika DP Subsidi dicentang)
-            let dpReduction = appliedToDp.includes(r.id) ? sub3 : 0;
-            let dp = Math.max(0, (harga - kpr) - dpReduction);
+            let dp = Math.max(0, (harga - kpr) - rowSub3);
             if(harga - totalRowSubsidy < kpr) dp = 0; 
 
+            sumSub2 += rowSub2;
+            sumSub3 += rowSub3;
             sumDp += dp;
+            sumCustomTotal += rowCustomPromosTotal;
             sumTotalNet += netCash;
             sumTotalProf += profit;
 
             let m = netCash > 0 ? (profit / netCash) * 100 : 0;
             let mkup = hpp > 0 ? (profit / hpp) * 100 : 0;
+
+            let promoCell = customPromos.length > 0 ? `<td class="text-red">${formatCurrency(rowCustomPromosTotal)}</td>` : '';
 
             let deleteBtn = index >= 1 ? `
                 <button class="btn-delete-row" onclick="removeRow(${r.id})" title="Hapus Baris">
@@ -784,8 +781,9 @@
                     <td>${formatCurrency(harga)}</td>
                     <td>${formatCurrency(kpr)}</td>
                     <td>${formatCurrency(dp)}</td>
-                    <td class="text-red">${formatCurrency(baseSub)}</td>
-                    ${promoCells}
+                    <td class="text-red">${formatCurrency(rowSub2)}</td>
+                    <td class="text-red">${formatCurrency(rowSub3)}</td>
+                    ${promoCell}
                     <td>${formatCurrency(netCash)}</td>
                     <td>${formatCurrency(profit)}</td>
                     <td>${m.toFixed(2)}%</td>
@@ -795,7 +793,7 @@
             `;
         }).join('');
 
-        let sumCustomHtml = customSubSums.map(sum => `<td class="text-red">${formatCurrency(sum)}</td>`).join('');
+        let sumCustomHtml = customPromos.length > 0 ? `<td class="text-red">${formatCurrency(sumCustomTotal)}</td>` : '';
         let mgab = sumTotalNet > 0 ? (sumTotalProf / sumTotalNet) * 100 : 0;
         let mkupGab = totalHpp > 0 ? (sumTotalProf / totalHpp) * 100 : 0;
 
@@ -806,7 +804,8 @@
                 <td>${formatCurrency(totalHarga)}</td>
                 <td>${formatCurrency(totalKpr)}</td>
                 <td>${formatCurrency(sumDp)}</td>
-                <td class="text-red">${formatCurrency(sumBaseSub)}</td>
+                <td class="text-red">${formatCurrency(sumSub2)}</td>
+                <td class="text-red">${formatCurrency(sumSub3)}</td>
                 ${sumCustomHtml}
                 <td>${formatCurrency(sumTotalNet)}</td>
                 <td>${formatCurrency(sumTotalProf)}</td>
