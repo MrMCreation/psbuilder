@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Strategy Builder by Mr. M</title>
+    
+    <style>
+        :root {
+            --bg-body: #fdfbfb;
+            --bg-card: #ffffff;
+            --primary: #d32f2f;
+            --primary-light: #ffebee;
+            --primary-dark: #b71c1c;
+            --border: #ef9a9a;
+            --text-main: #2b2b2b;
+            --text-muted: #666666;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background-color: var(--bg-card);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(211, 47, 47, 0.08);
+            border-top: 6px solid var(--primary);
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eeeeee;
+            position: relative;
+        }
+
+        .header h1 {
+            color: var(--primary-dark);
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1em;
+        }
+
+        /* Styling untuk tombol Print diposisikan di pojok kanan atas */
+        .doc-actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .doc-actions button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            padding: 8px 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            border: 1px solid #eeeeee;
+            padding: 25px;
+            border-radius: 8px;
+            background-color: #fafafa;
+            position: relative;
+        }
+
+        .card.active-card {
+            border: 2px solid var(--primary);
+            background-color: var(--bg-card);
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.05);
+        }
+
+        .card h3 {
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--text-main);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .input-group span.prefix {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .input-group span.suffix {
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            font-size: 1.05em;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        input.has-prefix { padding-left: 45px; }
+        input.has-suffix { padding-right: 35px; }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+            background-color: #ffffff;
+        }
+
+        .sync-icon {
+            color: var(--primary);
+            font-size: 1em;
+            margin-left: 6px;
+        }
+
+        .formula-box {
+            font-size: 0.9em;
+            margin-top: -5px;
+            margin-bottom: 20px;
+            background: var(--primary-light);
+            padding: 12px 14px;
+            border-radius: 4px;
+            border-left: 4px solid var(--primary);
+            line-height: 1.7;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+        
+        .formula-box span, .formula-box strong {
+            color: var(--text-main) !important;
+            font-weight: 600;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid #eeeeee;
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+            background: #ffffff;
+        }
+
+        th, td {
+            border: 1px solid #eeeeee;
+            padding: 10px 12px;
+            text-align: right;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: #ffffff;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td:first-child, th:first-child { text-align: left; }
+        tr:hover td { background-color: var(--primary-light); }
+
+        .row-total td {
+            font-weight: bold;
+            background-color: var(--primary-light) !important;
+            color: var(--primary-dark);
+            border-top: 2px solid var(--primary);
+        }
+
+        .text-red {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .editable-cell {
+            outline: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+            display: inline-block;
+            min-width: 100px;
+        }
+        .editable-cell:hover {
+            border-bottom: 1px dashed var(--primary);
+            cursor: text;
+        }
+        .editable-cell:focus {
+            background-color: #fff;
+            border-bottom: 1px solid var(--primary);
+            padding: 2px 4px;
+            border-radius: 3px;
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .btn-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-action:hover { background-color: var(--primary-dark); }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .btn-outline:hover { background-color: var(--primary-light); }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #d32f2f;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            padding: 0 5px;
+        }
+        .btn-delete:hover { color: #b71c1c; transform: scale(1.1); }
+
+        .promo-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .promo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .promo-name-input {
+            border: none !important;
+            border-bottom: 1px dashed #ccc !important;
+            border-radius: 0 !important;
+            padding: 2px !important;
+            font-weight: 600 !important;
+            color: var(--primary-dark) !important;
+            background: transparent !important;
+            width: 70% !important;
+            box-shadow: none !important;
+        }
+        .promo-name-input:focus { border-bottom-color: var(--primary) !important; }
+        .promo-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+            font-size: 0.85em;
+            padding: 8px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        .promo-checkboxes label {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        /* =========================================
+           TAMBAHAN: RESPONSIVE DESIGN (MOBILE)
+           ========================================= */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 15px; }
+            .grid { grid-template-columns: 1fr; gap: 15px; }
+            .header h1 { font-size: 1.5em; }
+            
+            /* Penyesuaian agar tombol print tidak tertimpa text di mobile */
+            .doc-actions { position: relative; margin-top: 15px; display: flex; flex-direction: column; }
+            .doc-actions button { width: 100%; justify-content: center; padding: 12px; font-size: 1em; }
+            
+            .promo-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .promo-name-input { width: 100% !important; }
+            .promo-header .btn-delete { align-self: flex-end; }
+            .table-container { padding-bottom: 10px; }
+        }
+
+        /* =========================================
+           TAMBAHAN: PRINT STYLING
+           ========================================= */
+        @media print {
+            body { background: #fff; padding: 0; margin: 0; }
+            .container { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+            
+            /* Sembunyikan elemen interaktif */
+            .btn-action, .btn-delete, .doc-actions, .sync-icon { display: none !important; }
+            
+            /* Ubah input menjadi seperti teks biasa */
+            input[type="text"], input[type="number"], .promo-name-input {
+                border: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                color: #000 !important;
+            }
+            
+            .input-group { margin-bottom: 8px; display: flex; align-items: center; }
+            .input-group span.prefix, .input-group span.suffix { position: static; margin: 0 5px; color: #000; }
+            input.has-prefix { padding-left: 0 !important; }
+            input.has-suffix { padding-right: 0 !important; }
+            
+            /* Penyesuaian Layout */
+            .grid { display: flex; flex-direction: row; gap: 20px; page-break-inside: avoid; }
+            .card { flex: 1; border: 1px solid #ccc; padding: 15px; background: #fff; }
+            .card.active-card { border: 1px solid #ccc; box-shadow: none; }
+            .formula-box { background: #f9f9f9; border-left-color: #ccc; }
+            
+            /* Penyesuaian Tabel agar muat di kertas */
+            .table-container { overflow: visible; border: none; }
+            table { font-size: 10px; page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            th { background-color: #eee !important; color: #000 !important; border: 1px solid #ccc; }
+            td { border: 1px solid #ccc; color: #000; }
+            .row-total td { background-color: #f5f5f5 !important; color: #000; }
+            .text-red { color: #000; } /* Hilangkan warna merah saat print agar hemat tinta/formal */
+            
+            /* Sembunyikan kolom action di tabel */
+            th:last-child, td:last-child { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="print-area">
+    <div class="header">
+        <h1>Pricing Strategy Builder</h1>
+        <p>Strategi Referral Pricing</p>
+        
+        <!-- Tombol Action Document dipindah ke pojok kanan atas -->
+        <div class="doc-actions">
+            <button class="btn-action btn-outline" onclick="window.print()">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/></svg>
+                Print Dokumen
+            </button>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- Baseline Data -->
+        <div class="card">
+            <h3>Data Produk</h3>
+            
+            <label>HPP</label>
+            <div class="input-group">
+                <span class="prefix">Rp</span>
+                <input type="text" class="curr input-baseline has-prefix" id="hpp" value="127.000.000">
+            </div>
+
+            <label>Plafond Bank</label>
+            <div class="input-group">
+                <span class="prefix">Rp</span>
+                <input type="text" class="curr input-baseline has-prefix" id="kpr" value="176.000.000">
+            </div>
+
+            <label>Promo Penjualan (Optional)</label>
+            <div class="input-group">
+                <span class="prefix">Rp</span>
+                <input type="text" class="curr input-baseline has-prefix" id="sub1" value="0">
+            </div>
+
+            <label>Biaya Akad & Admin</label>
+            <div class="input-group">
+                <span class="prefix">Rp</span>
+                <input type="text" class="curr input-baseline has-prefix" id="sub2" value="9.000.000">
+            </div>
+
+            <label>DP Konsumen</label>
+            <div class="input-group">
+                <span class="prefix">Rp</span>
+                <input type="text" class="curr input-baseline has-prefix" id="sub3" value="69.000.000">
+            </div>
+
+            <!-- Dynamic Promo Section -->
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed #eee;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <label style="margin: 0; color: var(--primary-dark);">Custom Promo Tambahan</label>
+                    <button class="btn-action btn-outline" onclick="addPromo()">+ Tambah Promo</button>
+                </div>
+                <div id="promo-container">
+                    <!-- Promos injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Modifiers -->
+        <div class="card active-card">
+            <h3>Edit Value <span class="sync-icon">⭤</span></h3>
+            
+            <label>Harga Jual</label>
+            <div class="input-group">
+                <span class="prefix">Rp</span>
+                <input type="text" class="curr has-prefix" id="harga" value="245.000.000" style="font-weight:bold; color: var(--primary-dark);">
+            </div>
+
+            <label>Target Margin Konsolidasi</label>
+            <div class="input-group" style="margin-bottom: 10px;">
+                <input type="number" step="0.01" class="has-suffix" id="marginGab" value="41.11" style="font-weight:bold; color: var(--primary-dark);">
+                <span class="suffix">%</span>
+            </div>
+            <div class="formula-box" id="formulaMarginBox">
+                <!-- Injected via JS -->
+            </div>
+
+            <label>Target Mark-up HPP Konsolidasi</label>
+            <div class="input-group" style="margin-bottom: 10px;">
+                <input type="number" step="0.01" class="has-suffix" id="markupGab" value="70.00" style="font-weight:bold; color: var(--primary-dark);">
+                <span class="suffix">%</span>
+            </div>
+            <div class="formula-box" id="formulaMarkupBox">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
+            <h3 style="color: var(--primary-dark); margin: 0;">Proyeksi Keuntungan</h3>
+            <button class="btn-action" onclick="addRow()">+ Tambah Tipe Harga Baru</button>
+        </div>
+        <div class="table-container">
+            <table id="resultTable">
+                <thead id="table-head">
+                    <!-- Injected via JS -->
+                </thead>
+                <tbody id="table-body">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // CORE LOGIC (TIDAK DIUBAH SAMA SEKALI)
+    // ==========================================
+    const parseCurrency = val => parseFloat(val.toString().replace(/[^0-9]/g, '')) || 0;
+    const formatCurrency = val => Math.round(val).toLocaleString('id-ID');
+    const parseNumber = val => parseFloat(val) || 0;
+
+    const elHpp = document.getElementById('hpp');
+    const elKpr = document.getElementById('kpr');
+    const elSub1 = document.getElementById('sub1');
+    const elSub2 = document.getElementById('sub2');
+    const elSub3 = document.getElementById('sub3');
+    const elHarga = document.getElementById('harga');
+    const elMarginGab = document.getElementById('marginGab');
+    const elMarkupGab = document.getElementById('markupGab');
+    const thead = document.getElementById('table-head');
+    const tbody = document.getElementById('table-body');
+    const promoContainer = document.getElementById('promo-container');
+    const boxMargin = document.getElementById('formulaMarginBox');
+    const boxMarkup = document.getElementById('formulaMarkupBox');
+
+    let isUpdating = false;
+
+    let rowData = [
+        { id: 1, name: "Harga 1 (Normal)" },
+        { id: 2, name: "Harga 2 (Ajak 1 Orang)" },
+        { id: 3, name: "Harga 3 (Ajak 2 Orang)" }
+    ];
+    let customPromos = []; 
+
+    function saveToLocal() {
+        const data = {
+            hpp: elHpp.value, kpr: elKpr.value, sub1: elSub1.value, sub2: elSub2.value, sub3: elSub3.value,
+            harga: elHarga.value, marginGab: elMarginGab.value, markupGab: elMarkupGab.value,
+            rows: rowData, promos: customPromos
+        };
+        localStorage.setItem('dominoAdvancedData', JSON.stringify(data));
+    }
+
+    function loadFromLocal() {
+        const saved = localStorage.getItem('dominoAdvancedData');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                if (data.hpp) elHpp.value = data.hpp;
+                if (data.kpr) elKpr.value = data.kpr;
+                if (data.sub1) elSub1.value = data.sub1;
+                if (data.sub2) elSub2.value = data.sub2;
+                if (data.sub3) elSub3.value = data.sub3;
+                if (data.harga) elHarga.value = data.harga;
+                if (data.marginGab) elMarginGab.value = data.marginGab;
+                if (data.markupGab) elMarkupGab.value = data.markupGab;
+                if (data.rows && data.rows.length > 0) rowData = data.rows;
+                if (data.promos) customPromos = data.promos;
+            } catch(e) {}
+        }
+    }
+
+    function addPromo() {
+        customPromos.push({
+            id: Date.now(),
+            name: "Promo " + (customPromos.length + 1),
+            amount: 0,
+            appliedTo: [] 
+        });
+        renderPromoUI();
+        updateFromHarga();
+    }
+
+    function removePromo(id) {
+        customPromos = customPromos.filter(p => p.id !== id);
+        renderPromoUI();
+        updateFromHarga();
+    }
+
+    function updatePromoName(id, newName) {
+        let p = customPromos.find(p => p.id === id);
+        if (p) { p.name = newName; updateFromHarga(); }
+    }
+
+    function handlePromoAmountInput(el, id) {
+        let cleanVal = el.value.replace(/[^0-9]/g, '');
+        let cursorPosition = el.selectionStart;
+        let oldLength = el.value.length;
+        el.value = cleanVal ? parseInt(cleanVal, 10).toLocaleString('id-ID') : '';
+        el.setSelectionRange(cursorPosition + (el.value.length - oldLength), cursorPosition + (el.value.length - oldLength));
+        
+        let p = customPromos.find(p => p.id === id);
+        if (p) { p.amount = parseInt(cleanVal, 10) || 0; updateFromHarga(); }
+    }
+
+    function togglePromoRow(promoId, rowId, isChecked) {
+        let p = customPromos.find(p => p.id === promoId);
+        if (p) {
+            if (isChecked && !p.appliedTo.includes(rowId)) p.appliedTo.push(rowId);
+            else if (!isChecked) p.appliedTo = p.appliedTo.filter(id => id !== rowId);
+            saveToLocal();
+            updateFromHarga();
+        }
+    }
+
+    function renderPromoUI() {
+        promoContainer.innerHTML = customPromos.map(p => `
+            <div class="promo-item">
+                <div class="promo-header">
+                    <input type="text" class="promo-name-input" value="${p.name}" onblur="updatePromoName(${p.id}, this.value)">
+                    <button class="btn-delete" onclick="removePromo(${p.id})">×</button>
+                </div>
+                <div class="input-group" style="margin-bottom:0;">
+                    <span class="prefix">Rp</span>
+                    <input type="text" class="has-prefix" value="${formatCurrency(p.amount)}" oninput="handlePromoAmountInput(this, ${p.id})">
+                </div>
+                <div class="promo-checkboxes">
+                    <span style="width:100%; color:#666; font-size:0.9em; font-weight:600;">Terapkan di:</span>
+                    ${rowData.map(r => `
+                        <label><input type="checkbox" onchange="togglePromoRow(${p.id}, ${r.id}, this.checked)" ${p.appliedTo.includes(r.id) ? 'checked' : ''}> ${r.name}</label>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addRow() {
+        rowData.push({ id: Date.now(), name: "Harga " + (rowData.length + 1) });
+        renderPromoUI(); 
+        updateFromHarga();
+    }
+
+    function removeRow(id) {
+        if(rowData.length <= 1) return alert("Minimal harus ada 1 baris!");
+        rowData = rowData.filter(r => r.id !== id);
+        customPromos.forEach(p => p.appliedTo = p.appliedTo.filter(rid => rid !== id));
+        renderPromoUI();
+        updateFromHarga();
+    }
+
+    function updateRowName(id, newName) {
+        let r = rowData.find(r => r.id === id);
+        if (r) { r.name = newName; renderPromoUI(); saveToLocal(); }
+    }
+
+    function preventEnter(e) {
+        if(e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+    }
+
+    function renderFormulas(totalNet, totalHpp, totalProf, mgab, markupGab) {
+        boxMargin.innerHTML = `
+            <div>Margin = (Net Profit / Net Cash) x 100%</div>
+            <div>Margin = (Rp ${formatCurrency(totalNet)} - Rp ${formatCurrency(totalHpp)}) / Rp ${formatCurrency(totalNet)} = ${mgab.toFixed(2)}%</div>
+        `;
+        boxMarkup.innerHTML = `
+            <div>Mark-up HPP = (Net Profit / HPP) x 100%</div>
+            <div>Mark-up HPP = (Rp ${formatCurrency(totalNet)} - Rp ${formatCurrency(totalHpp)}) / Rp ${formatCurrency(totalHpp)} = ${markupGab.toFixed(2)}%</div>
+        `;
+    }
+
+    function renderTable(harga, hpp, kpr, sub1, sub2, sub3) {
+        let extraHeaders = customPromos.map(p => `<th>${p.name}</th>`).join('');
+        thead.innerHTML = `
+            <tr>
+                <th>Tipe Harga</th>
+                <th>HPP</th>
+                <th>Harga Jual</th>
+                <th>Plafond Bank</th>
+                <th>DP Konsumen</th>
+                <th>Subsidi Developer (Base)</th>
+                ${extraHeaders}
+                <th>Net Cash</th>
+                <th>Net Profit</th>
+                <th>Margin</th>
+                <th>Mark-up HPP</th>
+                <th></th>
+            </tr>
+        `;
+
+        let N = rowData.length;
+        let totalHpp = hpp * N;
+        let totalHarga = harga * N;
+        let totalKpr = kpr * N;
+        
+        let sumDp = 0, sumBaseSub = 0, sumTotalNet = 0, sumTotalProf = 0;
+        let customSubSums = new Array(customPromos.length).fill(0);
+
+        let rowsHtml = rowData.map((r, index) => {
+            let baseSub = (index === 0) ? sub1 : (index === 1) ? sub2 : (index === 2) ? sub3 : 0;
+            sumBaseSub += baseSub;
+
+            let rowCustomPromosTotal = 0;
+            let promoCells = customPromos.map((p, pIdx) => {
+                let amt = p.appliedTo.includes(r.id) ? p.amount : 0;
+                rowCustomPromosTotal += amt;
+                customSubSums[pIdx] += amt;
+                return `<td class="text-red">${formatCurrency(amt)}</td>`;
+            }).join('');
+
+            let totalRowSubsidy = baseSub + rowCustomPromosTotal;
+            let netCash = harga - totalRowSubsidy;
+            let profit = netCash - hpp;
+
+            let dp = Math.max(0, harga - kpr);
+            if (index === 2) dp = Math.max(0, (harga - kpr) - sub3); 
+            if(harga - totalRowSubsidy < kpr) dp = 0; 
+
+            sumDp += dp;
+            sumTotalNet += netCash;
+            sumTotalProf += profit;
+
+            let m = netCash > 0 ? (profit / netCash) * 100 : 0;
+            let mkup = hpp > 0 ? (profit / hpp) * 100 : 0;
+
+            let deleteBtn = index >= 3 ? `<button class="btn-delete" onclick="removeRow(${r.id})" title="Hapus Baris">×</button>` : '';
+
+            return `
+                <tr>
+                    <td>
+                        <span class="editable-cell" contenteditable="true" onblur="updateRowName(${r.id}, this.innerText)" onkeydown="preventEnter(event)">${r.name}</span>
+                    </td>
+                    <td>${formatCurrency(hpp)}</td>
+                    <td>${formatCurrency(harga)}</td>
+                    <td>${formatCurrency(kpr)}</td>
+                    <td>${formatCurrency(dp)}</td>
+                    <td class="text-red">${formatCurrency(baseSub)}</td>
+                    ${promoCells}
+                    <td>${formatCurrency(netCash)}</td>
+                    <td>${formatCurrency(profit)}</td>
+                    <td>${m.toFixed(2)}%</td>
+                    <td>${mkup.toFixed(2)}%</td>
+                    <td style="text-align:center;">${deleteBtn}</td>
+                </tr>
+            `;
+        }).join('');
+
+        let sumCustomHtml = customSubSums.map(sum => `<td class="text-red">${formatCurrency(sum)}</td>`).join('');
+        let mgab = sumTotalNet > 0 ? (sumTotalProf / sumTotalNet) * 100 : 0;
+        let mkupGab = totalHpp > 0 ? (sumTotalProf / totalHpp) * 100 : 0;
+
+        tbody.innerHTML = rowsHtml + `
+            <tr class="row-total">
+                <td>TOTAL KONSOLIDASI</td>
+                <td>${formatCurrency(totalHpp)}</td>
+                <td>${formatCurrency(totalHarga)}</td>
+                <td>${formatCurrency(totalKpr)}</td>
+                <td>${formatCurrency(sumDp)}</td>
+                <td class="text-red">${formatCurrency(sumBaseSub)}</td>
+                ${sumCustomHtml}
+                <td>${formatCurrency(sumTotalNet)}</td>
+                <td>${formatCurrency(sumTotalProf)}</td>
+                <td>${mgab.toFixed(2)}%</td>
+                <td>${mkupGab.toFixed(2)}%</td>
+                <td></td>
+            </tr>
+        `;
+
+        return { sumTotalNet, totalHpp, sumTotalProf, mgab, mkupGab };
+    }
+
+    function calculateTotalSubsidyForAll() {
+        let sub1 = parseCurrency(elSub1.value);
+        let sub2 = parseCurrency(elSub2.value);
+        let sub3 = parseCurrency(elSub3.value);
+        
+        let baseSubTotal = 0;
+        if(rowData.length > 0) baseSubTotal += sub1;
+        if(rowData.length > 1) baseSubTotal += sub2;
+        if(rowData.length > 2) baseSubTotal += sub3;
+
+        let customSubTotal = 0;
+        customPromos.forEach(p => {
+            customSubTotal += (p.amount * p.appliedTo.length);
+        });
+
+        return baseSubTotal + customSubTotal;
+    }
+
+    function updateFromHarga() {
+        if(isUpdating) return;
+        isUpdating = true;
+
+        let harga = parseCurrency(elHarga.value);
+        let hpp = parseCurrency(elHpp.value);
+        let kpr = parseCurrency(elKpr.value);
+        let sub1 = parseCurrency(elSub1.value);
+        let sub2 = parseCurrency(elSub2.value);
+        let sub3 = parseCurrency(elSub3.value);
+
+        let N = rowData.length;
+        let totalHpp = hpp * N;
+        let totalSub = calculateTotalSubsidyForAll();
+        
+        let totalNet = (harga * N) - totalSub;
+        let totalProf = totalNet - totalHpp;
+
+        let mgab = totalNet > 0 ? (totalProf / totalNet) * 100 : 0;
+        let mkupGab = totalHpp > 0 ? (totalProf / totalHpp) * 100 : 0;
+
+        elMarginGab.value = mgab.toFixed(2);
+        elMarkupGab.value = mkupGab.toFixed(2);
+
+        renderFormulas(totalNet, totalHpp, totalProf, mgab, mkupGab);
+        renderTable(harga, hpp, kpr, sub1, sub2, sub3);
+        
+        saveToLocal();
+        isUpdating = false;
+    }
+
+    function updateFromMarginGab() {
+        if(isUpdating) return;
+        isUpdating = true;
+
+        let mgab = parseNumber(elMarginGab.value) / 100;
+        if(mgab >= 0.99) mgab = 0.99; 
+
+        let hpp = parseCurrency(elHpp.value);
+        let kpr = parseCurrency(elKpr.value);
+        
+        let N = rowData.length;
+        let totalHpp = hpp * N;
+        let totalSub = calculateTotalSubsidyForAll();
+
+        let totalNet = totalHpp / (1 - mgab);
+        let harga = (totalNet + totalSub) / N;
+
+        elHarga.value = formatCurrency(harga);
+
+        let totalProf = totalNet - totalHpp;
+        let mkupGab = totalHpp > 0 ? (totalProf / totalHpp) * 100 : 0;
+        
+        elMarkupGab.value = mkupGab.toFixed(2);
+
+        renderFormulas(totalNet, totalHpp, totalProf, mgab * 100, mkupGab);
+        renderTable(harga, hpp, kpr, parseCurrency(elSub1.value), parseCurrency(elSub2.value), parseCurrency(elSub3.value));
+        
+        saveToLocal();
+        isUpdating = false;
+    }
+
+    function updateFromMarkupGab() {
+        if(isUpdating) return;
+        isUpdating = true;
+
+        let mkupGab = parseNumber(elMarkupGab.value) / 100;
+
+        let hpp = parseCurrency(elHpp.value);
+        let kpr = parseCurrency(elKpr.value);
+        
+        let N = rowData.length;
+        let totalHpp = hpp * N;
+        let totalSub = calculateTotalSubsidyForAll();
+
+        let totalNet = totalHpp * (1 + mkupGab);
+        let harga = (totalNet + totalSub) / N;
+
+        elHarga.value = formatCurrency(harga);
+        
+        let totalProf = totalNet - totalHpp;
+        let mgab = totalNet > 0 ? (totalProf / totalNet) * 100 : 0;
+
+        elMarginGab.value = mgab.toFixed(2);
+
+        renderFormulas(totalNet, totalHpp, totalProf, mgab, mkupGab * 100);
+        renderTable(harga, hpp, kpr, parseCurrency(elSub1.value), parseCurrency(elSub2.value), parseCurrency(elSub3.value));
+        
+        saveToLocal();
+        isUpdating = false;
+    }
+
+    document.querySelectorAll('.input-baseline').forEach(inp => {
+        inp.addEventListener('input', function(e) {
+            let cleanVal = this.value.replace(/[^0-9]/g, '');
+            if (cleanVal) {
+                let cursorPosition = this.selectionStart;
+                let oldLength = this.value.length;
+                this.value = parseInt(cleanVal, 10).toLocaleString('id-ID');
+                let diff = this.value.length - oldLength;
+                this.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
+            } else this.value = '';
+            updateFromHarga();
+        });
+    });
+
+    elHarga.addEventListener('input', function(e) {
+        let cleanVal = this.value.replace(/[^0-9]/g, '');
+        if (cleanVal) {
+            let cursorPosition = this.selectionStart;
+            let oldLength = this.value.length;
+            this.value = parseInt(cleanVal, 10).toLocaleString('id-ID');
+            this.setSelectionRange(cursorPosition + (this.value.length - oldLength), cursorPosition + (this.value.length - oldLength));
+        } else this.value = '';
+        updateFromHarga();
+    });
+
+    elMarginGab.addEventListener('input', updateFromMarginGab);
+    elMarkupGab.addEventListener('input', updateFromMarkupGab);
+
+    window.onload = () => {
+        loadFromLocal();
+        renderPromoUI();
+        document.querySelectorAll('.curr').forEach(inp => {
+            let cleanVal = inp.value.replace(/[^0-9]/g, '');
+            if (cleanVal) inp.value = parseInt(cleanVal, 10).toLocaleString('id-ID');
+        });
+        updateFromHarga();
+    };
+</script>
+</body>
+</html>
