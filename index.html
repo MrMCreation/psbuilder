@@ -453,7 +453,7 @@
 
         <!-- Dynamic Modifiers -->
         <div class="card active-card">
-            <h3>Edit Value <span class="sync-icon"></span></h3>
+            <h3>Edit Value <span class="sync-icon">⭤</span></h3>
             
             <label>Harga Jual</label>
             <div class="input-group">
@@ -523,9 +523,9 @@
     let isUpdating = false;
 
     let rowData = [
-        { id: 1, name: "Harga A (Normal)" },
-        { id: 2, name: "Harga B (Ajak 1 Orang)" },
-        { id: 3, name: "Harga C (Ajak 2 Orang)" }
+        { id: 1, name: "Harga 1 (Normal)" },
+        { id: 2, name: "Harga 2 (Ajak 1 Orang)" },
+        { id: 3, name: "Harga 3 (Ajak 2 Orang)" }
     ];
     let customPromos = []; 
     
@@ -645,9 +645,9 @@
             `).join('')}
         `;
 
-        // Render Custom Promos (Desain disamakan dengan form atasnya)
+        // Render Custom Promos (Desain disamakan persis dengan form atasnya)
         promoContainer.innerHTML = customPromos.map(p => `
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 18px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px;">
                     <div class="editable-label" contenteditable="true" onblur="updatePromoName(${p.id}, this.innerText)" onkeydown="preventEnter(event)" style="margin-bottom:0; width: 85%;">${p.name}</div>
                     <button class="btn-delete" onclick="removePromo(${p.id})" style="font-size: 1.2em; line-height: 1; padding: 0;" title="Hapus Promo">×</button>
@@ -705,19 +705,15 @@
     }
 
     function renderTable(harga, hpp, kpr, sub2, sub3) {
-        // Kolom Promo Tambahan hanya muncul jika ada Custom Promo yang dibuat
-        let promoHeaderCol = customPromos.length > 0 ? `<th>Promo Tambahan</th>` : '';
-
+        // Header tabel digabung: Akad, DP, dan Custom Promo menjadi satu kolom "Promo"
         thead.innerHTML = `
             <tr>
                 <th>Tipe Harga</th>
                 <th>HPP</th>
                 <th>Harga Jual</th>
                 <th>Plafond Bank</th>
-                <th>${titleSub3} (Nett)</th>
-                <th>${titleSub2}</th>
-                <th>${titleSub3} (Subsidi)</th>
-                ${promoHeaderCol}
+                <th>DP (Nett)</th>
+                <th>Promo</th>
                 <th>Net Cash</th>
                 <th>Net Profit</th>
                 <th>Margin</th>
@@ -742,10 +738,12 @@
                 if (p.appliedTo.includes(r.id)) rowCustomPromosTotal += p.amount;
             });
 
+            // Total Promo adalah gabungan dari Akad, DP, dan Custom Promo
             let totalRowSubsidy = rowSub2 + rowSub3 + rowCustomPromosTotal;
             let netCash = harga - totalRowSubsidy;
             let profit = netCash - hpp;
 
+            // DP Nett adalah Harga Jual dikurangi KPR dan dikurangi Subsidi DP (jika ada)
             let dp = Math.max(0, (harga - kpr) - rowSub3);
             if(harga - totalRowSubsidy < kpr) dp = 0; 
 
@@ -758,8 +756,6 @@
 
             let m = netCash > 0 ? (profit / netCash) * 100 : 0;
             let mkup = hpp > 0 ? (profit / hpp) * 100 : 0;
-
-            let promoCell = customPromos.length > 0 ? `<td class="text-red">${formatCurrency(rowCustomPromosTotal)}</td>` : '';
 
             let deleteBtn = index >= 1 ? `
                 <button class="btn-delete-row" onclick="removeRow(${r.id})" title="Hapus Baris">
@@ -781,9 +777,7 @@
                     <td>${formatCurrency(harga)}</td>
                     <td>${formatCurrency(kpr)}</td>
                     <td>${formatCurrency(dp)}</td>
-                    <td class="text-red">${formatCurrency(rowSub2)}</td>
-                    <td class="text-red">${formatCurrency(rowSub3)}</td>
-                    ${promoCell}
+                    <td class="text-red">${formatCurrency(totalRowSubsidy)}</td>
                     <td>${formatCurrency(netCash)}</td>
                     <td>${formatCurrency(profit)}</td>
                     <td>${m.toFixed(2)}%</td>
@@ -793,7 +787,7 @@
             `;
         }).join('');
 
-        let sumCustomHtml = customPromos.length > 0 ? `<td class="text-red">${formatCurrency(sumCustomTotal)}</td>` : '';
+        let sumTotalPromo = sumSub2 + sumSub3 + sumCustomTotal;
         let mgab = sumTotalNet > 0 ? (sumTotalProf / sumTotalNet) * 100 : 0;
         let mkupGab = totalHpp > 0 ? (sumTotalProf / totalHpp) * 100 : 0;
 
@@ -804,9 +798,7 @@
                 <td>${formatCurrency(totalHarga)}</td>
                 <td>${formatCurrency(totalKpr)}</td>
                 <td>${formatCurrency(sumDp)}</td>
-                <td class="text-red">${formatCurrency(sumSub2)}</td>
-                <td class="text-red">${formatCurrency(sumSub3)}</td>
-                ${sumCustomHtml}
+                <td class="text-red">${formatCurrency(sumTotalPromo)}</td>
                 <td>${formatCurrency(sumTotalNet)}</td>
                 <td>${formatCurrency(sumTotalProf)}</td>
                 <td>${mgab.toFixed(2)}%</td>
